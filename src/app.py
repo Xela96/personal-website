@@ -1,4 +1,4 @@
-from flask import Flask, render_template, flash, redirect, url_for, request, jsonify
+from flask import Flask, json, render_template, flash, redirect, url_for, request, jsonify
 from flask_mail import Mail, Message
 from ContactForm import ContactForm
 import csv, os
@@ -64,6 +64,15 @@ def projects():
             "technologies": "Flask, HTML, CSS"
         }
     ]
+
+    text = request.args.get('searchText', '')
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest" and text:
+        result = [
+            f"<h2>{project['title']}</h2><p>{project['description']}</p><p><strong>Technologies Used:</strong> {project['technologies']}</p>"
+            for project in projects_data if text.lower() in project['title'].lower()
+        ]
+        return jsonify({"results": result})
+
     return render_template('projects.html', projects=projects_data)
 
 if __name__ == '__main__':

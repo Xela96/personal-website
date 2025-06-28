@@ -54,7 +54,6 @@
         const form = e.target;
         const formData = new FormData(form);
 
-        // Convert FormData to URL-encoded string
         const data = new URLSearchParams();
         for (const pair of formData) {
             data.append(pair[0], pair[1]);
@@ -71,11 +70,9 @@
 
         const result = await response.json();
 
-        // Remove any existing alert
         const oldAlert = document.querySelector('.alert');
         if (oldAlert) oldAlert.remove();
 
-        // Show new alert
         const alertDiv = document.createElement('div');
         alertDiv.className = `alert alert-${result.category} alert-dismissible fade show`;
         alertDiv.role = "alert";
@@ -83,7 +80,6 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
         form.appendChild(alertDiv);
 
-        // Optionally, clear the form fields on success
         if (result.category === 'success') {
             form.reset();
         }
