@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alex Doherty</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+    {% extends 'base.html' %}
+
+    {% block content %}
+    <header>
+        <p>Hi, I'm Alex Doherty, a software developer with a passion for test automation.</p>
+    </header>
+    <section>
+        <h2>About Me</h2>
+        <p>Welcome to my personal website! Feel free to mess around with any of the features and let me know if you find any issues through the contact me form. Software Engineer with 3+ years of experience developing automation manufacturing applications and automated test frameworks using .NET and Python. Passionate about writing clean, efficient code and solving real-world problems through technology. Currently focused on full-stack development and test automation. Industry experience includes medical devices as well as performance and simulation systems.</p>
+    </section>
+    <section>
+        <h2>Experience</h2>
+        <p>Throughout my career, I have worked on numerous projects that have honed my skills in software development and test automation.</p>
+    </section>
+    <section>
+        <h2>Contact Me</h2>
+        <form method="POST" action="/" class="contact-form">
+            {{form.hidden_tag()}}
+            {{form.csrf_token}}
+            {{form.name.label()}}
+            {{form.name(class="form-control")}}
+            {{form.email.label()}}
+            {{form.email(class="form-control")}}
+            {{form.message.label()}}
+            {{form.message(class="form-control")}}
+            {{form.submit(class="btn btn-primary")}}
+
+            {% with messages = get_flashed_messages() %}    
+                {% if messages %}
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        {% for message in messages %}
+                            <strong>{{ message }}</strong>
+                        {% endfor %}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+            {% endwith %}
+        </form>
+    </section>
+    <script>
+    document.querySelector('.contact-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+
+        // Convert FormData to URL-encoded string
+        const data = new URLSearchParams();
+        for (const pair of formData) {
+            data.append(pair[0], pair[1]);
+        }
+
+        const response = await fetch("/", {
+            method: "POST",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: data
+        });
+
+        const result = await response.json();
+
+        // Remove any existing alert
+        const oldAlert = document.querySelector('.alert');
+        if (oldAlert) oldAlert.remove();
+
+        // Show new alert
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${result.category} alert-dismissible fade show`;
+        alertDiv.role = "alert";
+        alertDiv.innerHTML = `<strong>${result.message}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
+        form.appendChild(alertDiv);
+
+        // Optionally, clear the form fields on success
+        if (result.category === 'success') {
+            form.reset();
+        }
+    });
+    </script>
+    {% endblock %}
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
