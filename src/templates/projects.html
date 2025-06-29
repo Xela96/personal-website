@@ -7,8 +7,6 @@
 .project-item.show { display: block; }
 </style>
 
-
-
 <div class="d-flex justify-content-center mb-4" style="margin-top: 2rem;">
   <div class="input-group" style="max-width: 500px;">
     <input type="text" class="form-control" placeholder="Search..." onkeyup="liveSearch(this.value)">
@@ -16,23 +14,25 @@
       <i class="bi bi-filter"></i>
     </button>
     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-      <li><button class="dropdown-item" onclick="filterSelection('all')">Show all</button></li>
-      {% set techs = [] %}
-      {% for project in projects %}
-        {% for tech in project.technologies %}
-          {% if tech not in techs %}
-            {% set _ = techs.append(tech) %}
-            <li><button class="dropdown-item" onclick="filterSelection('{{ tech }}')">{{ tech }}</button></li>
-          {% endif %}
+        <li><button class="dropdown-item" onclick="filterSelection('all')">Show all</button></li>
+        <div class="dropdown-divider"></div>
+        {% set techs = [] %}
+        {% for project in projects %}
+            {% for tech in project.technologies %}
+            {% if tech not in techs %}
+                {% set _ = techs.append(tech) %}
+                <li><button class="dropdown-item" onclick="filterSelection('{{ tech }}')">{{ tech }}</button></li>
+            {% endif %}
+            {% endfor %}
         {% endfor %}
-      {% endfor %}
     </ul>
   </div>
 </div>
-
-<div id="results"></div>
-<div class="container">
-    <h1>My Projects</h1>
+<div id="projectsTitleContainer" class="text-center mb-4">
+    <h1>Projects</h1>
+</div>
+<div class="container" class="text-center mb-4">
+    <div id="results"></div>
     <ul>
         {% for project in projects %}
             <li class="project-item {% for tech in project.technologies %}{{ tech }} {% endfor %}">
@@ -58,7 +58,7 @@ function liveSearch(value) {
                 url: "/projects",
                 data: { searchText: value },
                 dataType: 'json',
-                headers: { "X-Requested-With": "XMLHttpRequest" }, // <-- Add this line
+                headers: { "X-Requested-With": "XMLHttpRequest" },
                 success: function(data) {
                     var res = "";
                     for(result in data.results) {
