@@ -55,13 +55,13 @@ def projects():
     projects_data = [
         {
             "title": "Test Automation Framework",
-            "description": "A robust framework for automated UI and API testing.",
-            "technologies": "Python, Selenium, Pytest"
+            "description": "A test framework for automated UI and API testing.",
+            "technologies": ["CSharp", "SpecFlow", "WinAppDriver", "Azure Pipeline"]
         },
         {
             "title": "Personal Portfolio Website",
             "description": "A website to showcase my projects and skills.",
-            "technologies": "Flask, HTML, CSS"
+            "technologies": ["Python", "Flask", "HTML", "CSS"]
         }
     ]
 

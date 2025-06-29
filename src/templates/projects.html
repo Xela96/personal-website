@@ -1,18 +1,48 @@
 {% extends 'base.html' %}
 {% block content %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+.project-item { display: none; }
+.project-item.show { display: block; }
+</style>
 
-<div class="topnav">
-    <input type="text" placeholder="Search.." onkeyup="liveSearch(this.value)">
+
+
+<div class="d-flex justify-content-center mb-4" style="margin-top: 2rem;">
+  <div class="input-group" style="max-width: 500px;">
+    <input type="text" class="form-control" placeholder="Search..." onkeyup="liveSearch(this.value)">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-filter"></i>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+      <li><button class="dropdown-item" onclick="filterSelection('all')">Show all</button></li>
+      {% set techs = [] %}
+      {% for project in projects %}
+        {% for tech in project.technologies %}
+          {% if tech not in techs %}
+            {% set _ = techs.append(tech) %}
+            <li><button class="dropdown-item" onclick="filterSelection('{{ tech }}')">{{ tech }}</button></li>
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+    </ul>
+  </div>
 </div>
+
 <div id="results"></div>
 <div class="container">
     <h1>My Projects</h1>
     <ul>
         {% for project in projects %}
-            <li>
+            <li class="project-item {% for tech in project.technologies %}{{ tech }} {% endfor %}">
                 <h2>{{ project.title }}</h2>
                 <p>{{ project.description }}</p>
-                <p><strong>Technologies Used:</strong> {{ project.technologies }}</p>
+                <p><strong>Technologies Used:</strong>
+                    {% for tech in project.technologies %}
+                        {{ tech }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
             </li>
         {% endfor %}
     </ul>
@@ -42,6 +72,54 @@ function liveSearch(value) {
         $("#results").html("");
         $(".container ul").show();
     }
+}
+
+filterSelection("all")
+function filterSelection(c) {
+  var x, i;
+  x = document.getElementsByClassName("project-item");
+  if (c == "all") c = "";
+  // Add the "show" class (display:block) to the filtered elements, and remove the "show" class from the elements that are not selected
+  for (i = 0; i < x.length; i++) {
+    removeClass(x[i], "show");
+    if (x[i].className.indexOf(c) > -1) addClass(x[i], "show");
+  }
+}
+
+// Show filtered elements
+function addClass(element, name) {
+  var i, arr1, arr2;
+  arr1 = element.className.split(" ");
+  arr2 = name.split(" ");
+  for (i = 0; i < arr2.length; i++) {
+    if (arr1.indexOf(arr2[i]) == -1) {
+      element.className += " " + arr2[i];
+    }
+  }
+}
+
+// Hide elements that are not selected
+function removeClass(element, name) {
+  var i, arr1, arr2;
+  arr1 = element.className.split(" ");
+  arr2 = name.split(" ");
+  for (i = 0; i < arr2.length; i++) {
+    while (arr1.indexOf(arr2[i]) > -1) {
+      arr1.splice(arr1.indexOf(arr2[i]), 1);
+    }
+  }
+  element.className = arr1.join(" ");
+}
+
+// Add active class to the current control button (highlight it)
+var btnContainer = document.getElementById("filterBtnContainer");
+var btns = btnContainer.getElementsByClassName("btn");
+for (var i = 0; i < btns.length; i++) {
+  btns[i].addEventListener("click", function() {
+    var current = document.getElementsByClassName("active");
+    current[0].className = current[0].className.replace(" active", "");
+    this.className += " active";
+  });
 }
 </script>
 
