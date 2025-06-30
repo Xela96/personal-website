@@ -68,7 +68,7 @@ def projects():
     text = request.args.get('searchText', '')
     if request.headers.get("X-Requested-With") == "XMLHttpRequest" and text:
         result = [
-            f"<h2>{project['title']}</h2><p>{project['description']}</p><p><strong>Technologies Used:</strong> {project['technologies']}</p>"
+            f"<h2>{project['title']}</h2><p>{project['description']}</p><p><strong>Technologies Used:</strong> {', '.join(project['technologies'])}</p>"
             for project in projects_data if text.lower() in project['title'].lower()
         ]
         return jsonify({"results": result})
