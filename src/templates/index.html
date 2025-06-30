@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
 
-    {% extends 'base.html' %}
+{% extends 'base.html' %}
 
 {% block head %}
     <meta charset="UTF-8">
@@ -13,15 +12,22 @@
 {% endblock head %}
 {% block content %}
 
-    <section>
+    <section class="mb-5 mt-3">
         <h2>About Me</h2>
-        <p>Welcome to my personal website! Feel free to mess around with any of the features and let me know if you find any issues through the contact me form. Software Engineer with 3+ years of experience developing automation manufacturing applications and automated test frameworks using .NET and Python. Passionate about writing clean, efficient code and solving real-world problems through technology. Currently focused on full-stack development and test automation. Industry experience includes medical devices as well as performance and simulation systems.</p>
+        <p class="card-text font-weight-light mb-2 mx-auto">Welcome to my personal website! Feel free to mess around with any of the features and let me know if you find any issues through the contact me form. 
+            Software Engineer with 3+ years of experience developing automation manufacturing applications and automated test frameworks using .NET and Python. 
+            Passionate about writing clean, efficient code and solving real-world problems through technology. 
+            Currently focused on full-stack development and test automation. 
+            Industry experience includes medical devices as well as performance and simulation systems.</p>
     </section>
-    <section>
+    <section class="mb-5">
         <h2>Experience</h2>
-        <p>Throughout my career, I have worked on numerous projects that have honed my skills in software development and test automation.</p>
+        <p class="card-text font-weight-light mb-2 mx-auto">Throughout my career, I have worked on numerous projects that have honed my skills in software development and test automation. 
+            I have used <strong>Squish for Python</strong> for UI test automation of QT built applications and <strong>WindowsApplicationDriver</strong> for Selenium-like UI test automation of Windows applications.
+            Working in the medical devices industry on devices such as pacemakers, defibrillators and dialysis machines has brought me a strict level of quality to my testing, knowing the importance of a product being released as intended.            
+        </p>
     </section>
-    <section>
+    <section class="mb-5">
         <h2>My CV</h2>
         <div class="d-flex justify-content-center mb-4" style="margin-top: 2rem;">
             <a href="/static/files/CV_AlexDoherty.pdf" download
@@ -31,7 +37,7 @@
         
         
     </section>
-    <section>
+    <section class="mb-5">
         <h2>Contact Me</h2>
         <form method="POST" action="/" class="contact-form">
             {{form.hidden_tag()}}
@@ -94,4 +100,3 @@
     });
     </script>
 {% endblock %}
-</html>

@@ -1,0 +1,18 @@
+[
+    {
+        "title": "Simulation Engine Test Framework",
+        "description": "An automated test framework for automated UI, API and result testing of an energy performance simulation engine.",
+        "technologies": ["CSharp", "SpecFlow", "WinAppDriver", "Azure Pipeline"]
+    },
+    {
+        "title": "Personal Portfolio Website",
+        "description": "A website to showcase my projects and skills.",
+        "technologies": ["Python", "Flask", "HTML", "CSS"],
+        "repository": "https://github.com/Xela96/personal-website"
+    },
+    {
+        "title": "Automated Fluid Tester",
+        "description": "Test library development for automated testing of fluidics medical device. Created test methods to test subsystem requirements of R&D product for design verification. CSharp and Python development for interaction with R&D product, Python script for UI automation and CSharp development for a human-machine interface.",
+        "technologies": ["Python", "Squish for Python", "CSharp"]
+    }
+]
