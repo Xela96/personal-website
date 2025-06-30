@@ -56,22 +56,27 @@ def projects():
         {
             "title": "Test Automation Framework",
             "description": "A test framework for automated UI and API testing.",
-            "technologies": ["CSharp", "SpecFlow", "WinAppDriver", "Azure Pipeline"]
+            "technologies": ["CSharp", "SpecFlow", "WinAppDriver", "Azure Pipeline"],
+            "repository": "https://github.com/Xela96/"
         },
         {
             "title": "Personal Portfolio Website",
             "description": "A website to showcase my projects and skills.",
-            "technologies": ["Python", "Flask", "HTML", "CSS"]
+            "technologies": ["Python", "Flask", "HTML", "CSS"],
+            "repository": "https://github.com/Xela96/personal-website"
         }
     ]
 
     text = request.args.get('searchText', '')
     if request.headers.get("X-Requested-With") == "XMLHttpRequest" and text:
-        result = [
-            f"<h2>{project['title']}</h2><p>{project['description']}</p><p><strong>Technologies Used:</strong> {', '.join(project['technologies'])}</p>"
-            for project in projects_data if text.lower() in project['title'].lower()
+        filtered = [
+            project for project in projects_data if text.lower() in project['title'].lower()
         ]
-        return jsonify({"results": result})
+        cards_html = ''.join(
+            render_template('_project_card.html', project=project)
+            for project in filtered
+        )
+        return jsonify({"results": [cards_html]})
 
     return render_template('projects.html', projects=projects_data)
 

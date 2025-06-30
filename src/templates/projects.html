@@ -14,7 +14,6 @@
     </button>
     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
         <li><button class="dropdown-item" onclick="filterSelection('all')">Show all</button></li>
-        <div class="dropdown-divider"></div>
         {% set techs = [] %}
         {% for project in projects %}
             {% for tech in project.technologies %}
@@ -30,21 +29,27 @@
 <div id="projectsTitleContainer" class="text-center mb-4">
     <h1>Projects</h1>
 </div>
-<div class="container" class="text-center mb-4">
+<div class="container mb-4">
     <div id="results"></div>
-    <ul>
+    <div id="projects-list">
         {% for project in projects %}
-            <li class="project-item {% for tech in project.technologies %}{{ tech }} {% endfor %}">
-                <h2>{{ project.title }}</h2>
-                <p>{{ project.description }}</p>
-                <p><strong>Technologies Used:</strong>
+        <div class="card mb-3 project-item {% for tech in project.technologies %}{{ tech }} {% endfor %} show">
+            <div class="card-body text-center">
+                <h2 class="card-title h5 mb-2">{{ project.title }}</h2>
+                <p class="card-text text-center mb-2" style="margin-left:5%;" >{{ project.description }}</p>
+                <div class="mb-2">
+                    <strong>Technologies Used:</strong>
                     {% for tech in project.technologies %}
-                        {{ tech }}{% if not loop.last %}, {% endif %}
+                        <span class="badge bg-secondary me-1">{{ tech }}</span>
                     {% endfor %}
-                </p>
-            </li>
+                </div>
+                <a href="{{ project.repository }}" class="btn btn-outline-primary btn-sm mt-2" target="_blank">
+                    <i class="bi bi-github"></i> Source code
+                </a>
+            </div>
+        </div>
         {% endfor %}
-    </ul>
+    </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
@@ -59,17 +64,14 @@ function liveSearch(value) {
                 dataType: 'json',
                 headers: { "X-Requested-With": "XMLHttpRequest" },
                 success: function(data) {
-                    var res = "";
-                    for(result in data.results) {
-                        res += "<div>" + data.results[result] + "</div>";
-                    }
-                    $("#results").html(res);
+                    $("#projects-list").hide();
+                    $("#results").html(data.results[0]);
                 }
             })
     }
     else {
         $("#results").html("");
-        $(".container ul").show();
+        $("#projects-list").show();
     }
 }
 
