@@ -1,0 +1,15 @@
+<div class="card mb-3 project-item {% for tech in project.technologies %}{{ tech }} {% endfor %} show">
+    <div class="card-body text-center">
+        <h2 class="card-title h5 mb-2">{{ project.title }}</h2>
+        <p class="card-text text-center mb-2" style="margin-left:5%;" >{{ project.description }}</p>
+        <div class="mb-2">
+            <strong>Technologies Used:</strong>
+            {% for tech in project.technologies %}
+                <span class="badge bg-secondary me-1">{{ tech }}</span>
+            {% endfor %}
+        </div>
+        <a href="{{ project.repository }}" class="btn btn-outline-primary btn-sm mt-2" target="_blank">
+            <i class="bi bi-github"></i> Source code
+        </a>
+    </div>
+</div>
