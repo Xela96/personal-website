@@ -50,22 +50,13 @@ def home():
                 return jsonify({'message': 'Form validation failed', 'category': 'danger', 'errors': form.errors})
     return render_template('index.html', form=form)
 
+def load_projects():
+    with open('src/projects.json', encoding='utf-8') as f:
+        return json.load(f)
+
 @app.route('/projects')
 def projects():
-    projects_data = [
-        {
-            "title": "Test Automation Framework",
-            "description": "A test framework for automated UI and API testing.",
-            "technologies": ["CSharp", "SpecFlow", "WinAppDriver", "Azure Pipeline"],
-            "repository": "https://github.com/Xela96/"
-        },
-        {
-            "title": "Personal Portfolio Website",
-            "description": "A website to showcase my projects and skills.",
-            "technologies": ["Python", "Flask", "HTML", "CSS"],
-            "repository": "https://github.com/Xela96/personal-website"
-        }
-    ]
+    projects_data = load_projects()
 
     text = request.args.get('searchText', '')
     if request.headers.get("X-Requested-With") == "XMLHttpRequest" and text:

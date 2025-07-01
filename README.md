@@ -2,14 +2,6 @@
 
 A simple personal website to display my skills and experience as a software developer. This website will also be utilised as a basis to build and test an automated test library using PlayWright.
 
-## How to run
-
-Download the source code to your system and navigate to the route directory.
-
-Run the following command to run the website locally:
-
-```flask --app src/app.py run --debug```
-
 ## How It's Made
 Tech used: HTML, CSS, JavaScript, Python, Flask, Jinja2
 
