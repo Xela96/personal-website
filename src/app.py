@@ -51,7 +51,8 @@ def home():
     return render_template('index.html', form=form)
 
 def load_projects():
-    with open('src/projects.json', encoding='utf-8') as f:
+    path = os.path.join(os.path.dirname(__file__), 'projects.json')
+    with open(path, encoding='utf-8') as f:
         return json.load(f)
 
 @app.route('/projects')
@@ -72,4 +73,4 @@ def projects():
     return render_template('projects.html', projects=projects_data)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+        app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
