@@ -4,7 +4,7 @@ from ContactForm import ContactForm
 import csv, os
 from dotenv import load_dotenv
 
-load_dotenv("..\.env")
+#load_dotenv("..\.env")
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
@@ -51,12 +51,13 @@ def home():
     return render_template('index.html', form=form)
 
 def load_projects():
-    with open('src/projects.json', encoding='utf-8') as f:
+    path = os.path.join(os.path.dirname(__file__), 'projects.json')
+    with open(path, encoding='utf-8') as f:
         return json.load(f)
 
 @app.route('/projects')
 def projects():
-    projects_data = load_projects()
+    projects_data = load_projects() 
 
     text = request.args.get('searchText', '')
     if request.headers.get("X-Requested-With") == "XMLHttpRequest" and text:
@@ -71,5 +72,5 @@ def projects():
 
     return render_template('projects.html', projects=projects_data)
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# if __name__ == '__main__':
+#     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
