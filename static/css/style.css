@@ -1,8 +1,15 @@
 body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
+}
+
+main {
+    flex: 1;
 }
 
 header {
@@ -67,6 +74,36 @@ footer {
     color: #333333;
 }
 
+.login-form {
+    max-width: 500px;
+    max-height: 500px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.login-form label {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.login-form input,
+.login-form textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.login-form textarea {
+    min-height: 50px;
+}
 
 
 .contact-form {
@@ -122,6 +159,11 @@ footer {
   padding: 14px 16px;
   text-decoration: none;
   font-size: 17px;
+}
+
+/* For login button to be on the right*/
+.topnav a.right {
+  float: right;
 }
 
 /* Change the color of links on hover */
