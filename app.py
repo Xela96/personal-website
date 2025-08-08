@@ -101,7 +101,7 @@ def login():
             next = request.args.get('next')
             if next and is_safe_url(next):
                 return redirect(next)
-            return redirect(url_for('home'))
+            return redirect(url_for('admin'))
         else:
             flash('Invalid credentials', 'danger')
 
@@ -113,6 +113,11 @@ def logout():
     logout_user()
     flash('Logged out.')
     return redirect(url_for('login'))
+
+@app.route("/admin")
+@login_required
+def admin():
+    return render_template("admin.html")
 
 class User(UserMixin):
     users = {
