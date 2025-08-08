@@ -3,10 +3,13 @@ from flask_mail import Mail, Message
 from ContactForm import ContactForm
 from LoginForm import LoginForm
 import os
-from dotenv import load_dotenv
 from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin
 from urllib.parse import urlparse, urljoin
 from flask_wtf.csrf import CSRFProtect
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from datetime import datetime
+from sqlalchemy.dialects.sqlite import JSON
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
@@ -20,11 +23,18 @@ app.config['MAIL_DEFAULT_SENDER'] = os.getenv("SENDER_EMAIL")
 app.config['MAIL_MAX_EMAILS'] = None
 app.config['MAIL_SUPPRESS_SEND'] = False
 app.config['MAIL_ASCII_ATTACHMENTS'] = False
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 mail = Mail(app)
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
+db = SQLAlchemy()
+migrate = Migrate(app, db)
+db.init_app(app)
 
 csrf = CSRFProtect(app)
 
@@ -66,7 +76,8 @@ def load_projects():
 
 @app.route('/projects')
 def projects():
-    projects_data = load_projects() 
+    projects_data = load_projects()
+    projects_list = Project.query.filter_by(is_published=True).order_by(Project.date_created.desc()).all()
 
     text = request.args.get('searchText', '')
     if request.headers.get("X-Requested-With") == "XMLHttpRequest" and text:
@@ -79,7 +90,7 @@ def projects():
         )
         return jsonify({"results": [cards_html]})
 
-    return render_template('projects.html', projects=projects_data)
+    return render_template('projects.html', projects=projects_list)
 
 def is_safe_url(target):
     ref_url = urlparse(request.host_url)
@@ -139,3 +150,22 @@ class User(UserMixin):
 def load_user(user_id):
     print(f"[DEBUG] user_loader called with: {user_id}")
     return User.get(user_id)
+
+class Project(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    technologies = db.Column(JSON)
+    github_url = db.Column(db.Text)
+    date_created = db.Column(db.DateTime, default=datetime.now)
+    last_updated = db.Column(db.DateTime, onupdate=datetime.now)
+    is_published = db.Column(db.Boolean, default=True)
+
+    def __repr__(self):
+        return f"<Project {self.title}>"
+    
+    def set_technologies(self, tech_list):
+        self.technologies = json.dumps(tech_list)
+
+    def get_technologies(self):
+        return json.loads(self.technologies or "[]")
