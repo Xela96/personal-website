@@ -3,10 +3,18 @@ from flask_mail import Mail, Message
 from ContactForm import ContactForm
 from LoginForm import LoginForm
 import os
-from dotenv import load_dotenv
+import os.path as op
 from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin
 from urllib.parse import urlparse, urljoin
 from flask_wtf.csrf import CSRFProtect
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from datetime import datetime
+from sqlalchemy.dialects.sqlite import JSON
+from sqlalchemy import LargeBinary
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
+from flask_admin.contrib.fileadmin import FileAdmin
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
@@ -20,13 +28,23 @@ app.config['MAIL_DEFAULT_SENDER'] = os.getenv("SENDER_EMAIL")
 app.config['MAIL_MAX_EMAILS'] = None
 app.config['MAIL_SUPPRESS_SEND'] = False
 app.config['MAIL_ASCII_ATTACHMENTS'] = False
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
 
 mail = Mail(app)
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
+db = SQLAlchemy()
+migrate = Migrate(app, db)
+db.init_app(app)
+
 csrf = CSRFProtect(app)
+
+admin = Admin(app, name='personal-website', template_mode='bootstrap3')
 
 @app.route('/', methods = ['GET', 'POST'])
 def home():    
@@ -55,31 +73,12 @@ def home():
             print("Form errors:", form.errors)
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
         return jsonify({'message': 'Form validation failed', 'category': 'danger', 'errors': form.errors})
-    #if 'username' in session:
-         #render_template('index.html', username=session["username"])
     return render_template('index.html', form=form)
-
-def load_projects():
-    path = os.path.join(os.path.dirname(__file__), 'projects.json')
-    with open(path, encoding='utf-8') as f:
-        return json.load(f)
 
 @app.route('/projects')
 def projects():
-    projects_data = load_projects() 
-
-    text = request.args.get('searchText', '')
-    if request.headers.get("X-Requested-With") == "XMLHttpRequest" and text:
-        filtered = [
-            project for project in projects_data if text.lower() in project['title'].lower()
-        ]
-        cards_html = ''.join(
-            render_template('_project_card.html', project=project)
-            for project in filtered
-        )
-        return jsonify({"results": [cards_html]})
-
-    return render_template('projects.html', projects=projects_data)
+    projects_list = Project.query.filter_by(is_published=True).order_by(Project.date_created.desc()).all()
+    return render_template('projects.html', projects=projects_list)
 
 def is_safe_url(target):
     ref_url = urlparse(request.host_url)
@@ -114,10 +113,10 @@ def logout():
     flash('Logged out.')
     return redirect(url_for('login'))
 
-@app.route("/admin")
-@login_required
-def admin():
-    return render_template("admin.html")
+# @app.route("/admin")
+# @login_required
+# def admin():
+#     return render_template("admin.html")
 
 class User(UserMixin):
     users = {
@@ -144,3 +143,34 @@ class User(UserMixin):
 def load_user(user_id):
     print(f"[DEBUG] user_loader called with: {user_id}")
     return User.get(user_id)
+
+class Project(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    technologies = db.Column(JSON)
+    github_url = db.Column(db.Text)
+    date_created = db.Column(db.DateTime, default=datetime.now)
+    last_updated = db.Column(db.DateTime, onupdate=datetime.now)
+    is_published = db.Column(db.Boolean, default=True)
+
+    def __repr__(self):
+        return f"<Project {self.title}>"
+    
+    def set_technologies(self, tech_list):
+        self.technologies = json.dumps(tech_list)
+
+    def get_technologies(self):
+        return json.loads(self.technologies or "[]")
+    
+class DownloadFile(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(50), nullable=False)
+    data = db.Column(LargeBinary)
+    
+path = op.join(op.dirname(__file__), 'static/files')
+admin.add_view(FileAdmin(path, '/static/files', name='Static Files'))
+
+admin.add_view(ModelView(Project, db.session))
+admin.add_view(ModelView(DownloadFile, db.session))
+
