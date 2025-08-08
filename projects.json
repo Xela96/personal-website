@@ -1,14 +1,20 @@
 [
     {
-        "title": "Simulation Engine Test Framework",
-        "description": "An automated test framework for automated UI, API and result testing of an energy performance simulation engine.",
-        "technologies": ["CSharp", "SpecFlow", "WinAppDriver", "Azure Pipeline"]
+        "title": "Playwright tests",
+        "description": "An automated test framework built with Playwright to test a Flask web application. Tests created for form validation, email delivery, file download, dynamic search and filtering and more.",
+        "technologies": ["Typescript", "Playwright", "Github CI", "Google Cloud Console"],
+        "repository": "https://github.com/Xela96/playwright-tests"
     },
     {
         "title": "Personal Portfolio Website",
         "description": "A website to showcase my projects and skills.",
         "technologies": ["Python", "Flask", "HTML", "CSS"],
         "repository": "https://github.com/Xela96/personal-website"
+    },
+    {
+        "title": "Simulation Engine Test Framework",
+        "description": "An automated test framework for automated UI, API and result testing of an energy performance simulation engine.",
+        "technologies": ["CSharp", "SpecFlow", "WinAppDriver", "Azure Pipeline"]
     },
     {
         "title": "Automated Fluid Tester",

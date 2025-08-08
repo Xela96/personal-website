@@ -8,8 +8,10 @@
                 <span class="badge bg-secondary me-1">{{ tech }}</span>
             {% endfor %}
         </div>
+        {% if project.repository %}
         <a href="{{ project.repository }}" class="btn btn-outline-primary btn-sm mt-2" target="_blank">
             <i class="bi bi-github"></i> Source code
         </a>
+        {% endif %}
     </div>
 </div>
