@@ -171,3 +171,4 @@ admin.add_view(FileAdmin(path, '/static/files', name='Static Files'))
 
 admin.add_view(ModelView(Project, db.session))
 admin.add_view(ModelView(HomepageContent, db.session))
+
