@@ -3,6 +3,7 @@ from flask_mail import Mail, Message
 from ContactForm import ContactForm
 from LoginForm import LoginForm
 import os
+import os.path as op
 from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin
 from urllib.parse import urlparse, urljoin
 from flask_wtf.csrf import CSRFProtect
@@ -10,6 +11,10 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from datetime import datetime
 from sqlalchemy.dialects.sqlite import JSON
+from sqlalchemy import LargeBinary
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
+from flask_admin.contrib.fileadmin import FileAdmin
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
@@ -25,6 +30,7 @@ app.config['MAIL_SUPPRESS_SEND'] = False
 app.config['MAIL_ASCII_ATTACHMENTS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
 
 mail = Mail(app)
 
@@ -38,8 +44,18 @@ db.init_app(app)
 
 csrf = CSRFProtect(app)
 
+admin = Admin(app, name='personal-website', template_mode='bootstrap3')
+
+class HomepageContent(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    section_name = db.Column(db.Text, nullable=False)
+    text_content = db.Column(db.Text, nullable=False)
+    last_updated = db.Column(db.DateTime, onupdate=datetime.now)
+
 @app.route('/', methods = ['GET', 'POST'])
-def home():    
+def home():
+    about = HomepageContent.query.filter_by(section_name="about_me").first()
+    experience = HomepageContent.query.filter_by(section_name="experience").first()
     form = ContactForm()
     if form.validate_on_submit():
         msg = Message(
@@ -65,31 +81,11 @@ def home():
             print("Form errors:", form.errors)
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
         return jsonify({'message': 'Form validation failed', 'category': 'danger', 'errors': form.errors})
-    #if 'username' in session:
-         #render_template('index.html', username=session["username"])
-    return render_template('index.html', form=form)
-
-def load_projects():
-    path = os.path.join(os.path.dirname(__file__), 'projects.json')
-    with open(path, encoding='utf-8') as f:
-        return json.load(f)
+    return render_template('index.html', form=form, about=about, experience=experience)
 
 @app.route('/projects')
 def projects():
-    projects_data = load_projects()
     projects_list = Project.query.filter_by(is_published=True).order_by(Project.date_created.desc()).all()
-
-    text = request.args.get('searchText', '')
-    if request.headers.get("X-Requested-With") == "XMLHttpRequest" and text:
-        filtered = [
-            project for project in projects_data if text.lower() in project['title'].lower()
-        ]
-        cards_html = ''.join(
-            render_template('_project_card.html', project=project)
-            for project in filtered
-        )
-        return jsonify({"results": [cards_html]})
-
     return render_template('projects.html', projects=projects_list)
 
 def is_safe_url(target):
@@ -112,7 +108,7 @@ def login():
             next = request.args.get('next')
             if next and is_safe_url(next):
                 return redirect(next)
-            return redirect(url_for('home'))
+            return redirect(url_for('admin'))
         else:
             flash('Invalid credentials', 'danger')
 
@@ -169,3 +165,10 @@ class Project(db.Model):
 
     def get_technologies(self):
         return json.loads(self.technologies or "[]")
+
+path = op.join(op.dirname(__file__), 'static/files')
+admin.add_view(FileAdmin(path, '/static/files', name='Static Files'))
+
+admin.add_view(ModelView(Project, db.session))
+admin.add_view(ModelView(HomepageContent, db.session))
+
