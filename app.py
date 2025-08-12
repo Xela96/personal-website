@@ -46,8 +46,16 @@ csrf = CSRFProtect(app)
 
 admin = Admin(app, name='personal-website', template_mode='bootstrap3')
 
+class HomepageContent(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    section_name = db.Column(db.Text, nullable=False)
+    text_content = db.Column(db.Text, nullable=False)
+    last_updated = db.Column(db.DateTime, onupdate=datetime.now)
+
 @app.route('/', methods = ['GET', 'POST'])
-def home():    
+def home():
+    about = HomepageContent.query.filter_by(section_name="about_me").first()
+    experience = HomepageContent.query.filter_by(section_name="experience").first()
     form = ContactForm()
     if form.validate_on_submit():
         msg = Message(
@@ -73,7 +81,7 @@ def home():
             print("Form errors:", form.errors)
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
         return jsonify({'message': 'Form validation failed', 'category': 'danger', 'errors': form.errors})
-    return render_template('index.html', form=form)
+    return render_template('index.html', form=form, about=about, experience=experience)
 
 @app.route('/projects')
 def projects():
@@ -112,11 +120,6 @@ def logout():
     logout_user()
     flash('Logged out.')
     return redirect(url_for('login'))
-
-# @app.route("/admin")
-# @login_required
-# def admin():
-#     return render_template("admin.html")
 
 class User(UserMixin):
     users = {
@@ -162,15 +165,9 @@ class Project(db.Model):
 
     def get_technologies(self):
         return json.loads(self.technologies or "[]")
-    
-class DownloadFile(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    filename = db.Column(db.String(50), nullable=False)
-    data = db.Column(LargeBinary)
-    
+
 path = op.join(op.dirname(__file__), 'static/files')
 admin.add_view(FileAdmin(path, '/static/files', name='Static Files'))
 
 admin.add_view(ModelView(Project, db.session))
-admin.add_view(ModelView(DownloadFile, db.session))
-
+admin.add_view(ModelView(HomepageContent, db.session))
