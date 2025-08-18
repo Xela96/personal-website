@@ -7,7 +7,7 @@ from extensions import mail
 
 homepage_bp = Blueprint("home", __name__, template_folder='templates')
 
-@homepage_bp.route("/")
+@homepage_bp.route("/", methods = ['GET', 'POST'])
 def home():
     about = HomepageContent.query.filter_by(section_name="about_me").first()
     experience = HomepageContent.query.filter_by(section_name="experience").first()
