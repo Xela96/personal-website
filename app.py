@@ -1,76 +1,62 @@
-from flask import Flask, json, render_template, flash, redirect, url_for, request, jsonify
-from flask_mail import Mail, Message
-from ContactForm import ContactForm
-import csv, os
-from dotenv import load_dotenv
+from flask import Flask
+import os
+import os.path as op
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
+from flask_admin.contrib.fileadmin import FileAdmin
+from extensions import db, mail, login_manager, csrf
+from models.homepagecontent import HomepageContent
+from models.project import Project
+from routes.home import homepage_bp
+from routes.login import login_bp
+from routes.logout import logout_bp
+from routes.projects import projects_bp
 
-#load_dotenv("..\.env")
 
-app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY")
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 465
-app.config['MAIL_USE_SSL'] = True
-app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_USERNAME'] = os.getenv("SENDER_EMAIL")
-app.config['MAIL_PASSWORD'] = os.getenv("MAIL_PASSWORD")
-app.config['MAIL_DEFAULT_SENDER'] = 'jbloggo96@gmail.com'
-app.config['MAIL_MAX_EMAILS'] = None
-app.config['MAIL_SUPPRESS_SEND'] = False
-app.config['MAIL_ASCII_ATTACHMENTS'] = False
+def create_app():
+    app = Flask(__name__)
 
-mail = Mail(app)
+    app.secret_key = os.getenv("SECRET_KEY")
+    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+    app.config['MAIL_PORT'] = 465
+    app.config['MAIL_USE_SSL'] = True
+    app.config['MAIL_USE_TLS'] = False
+    app.config['MAIL_USERNAME'] = os.getenv("SENDER_EMAIL")
+    app.config['MAIL_PASSWORD'] = os.getenv("MAIL_PASSWORD")
+    app.config['MAIL_DEFAULT_SENDER'] = os.getenv("SENDER_EMAIL")
+    app.config['MAIL_MAX_EMAILS'] = None
+    app.config['MAIL_SUPPRESS_SEND'] = False
+    app.config['MAIL_ASCII_ATTACHMENTS'] = False
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
 
-@app.route('/', methods = ['GET', 'POST'])
-def home():
-    form = ContactForm()
-    if form.validate_on_submit():
-        msg = Message(
-            subject=form.name.data,
-            sender=os.getenv("SENDER_EMAIL"),
-            recipients=[os.getenv("RECIPIENT_EMAIL")],
-            body=form.message.data + "\n\nFrom: " + form.email.data + "\nName: " + form.name.data,
-        )
-        try:
-            mail.send(msg)
-            message = 'Thank you for your message!'
-            category = 'success'
-        except Exception as e:
-            print("Error sending email:", e)
-            message = f"Error sending email: {e}"
-            category = 'danger'
-        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-            return jsonify({'message': message, 'category': category})
-        flash(message, category)
-        return redirect(url_for('home'))
-    else:
-        if request.method == 'POST':
-            print("Form errors:", form.errors)
-    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-                return jsonify({'message': 'Form validation failed', 'category': 'danger', 'errors': form.errors})
-    return render_template('index.html', form=form)
+    app.register_blueprint(homepage_bp)
+    app.register_blueprint(login_bp)
+    app.register_blueprint(logout_bp)
+    app.register_blueprint(projects_bp)
 
-def load_projects():
-    path = os.path.join(os.path.dirname(__file__), 'projects.json')
-    with open(path, encoding='utf-8') as f:
-        return json.load(f)
+    mail.init_app(app)
 
-@app.route('/projects')
-def projects():
-    projects_data = load_projects() 
+    login_manager.init_app(app)
+    login_manager.login_view = 'login'
 
-    text = request.args.get('searchText', '')
-    if request.headers.get("X-Requested-With") == "XMLHttpRequest" and text:
-        filtered = [
-            project for project in projects_data if text.lower() in project['title'].lower()
-        ]
-        cards_html = ''.join(
-            render_template('_project_card.html', project=project)
-            for project in filtered
-        )
-        return jsonify({"results": [cards_html]})
+    db.init_app(app)
 
-    return render_template('projects.html', projects=projects_data)
+    csrf.init_app(app)
 
-# if __name__ == '__main__':
-#     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    admin = Admin(app, name='personal-website', template_mode='bootstrap3')
+    init_admin(admin)
+
+    return app
+
+def init_admin(admin):
+    path = op.join(op.dirname(__file__), 'static/files')
+    admin.add_view(FileAdmin(path, '/static/files', name='Static Files'))
+
+    admin.add_view(ModelView(Project, db.session))
+    admin.add_view(ModelView(HomepageContent, db.session))
+
+if __name__ == "__main__":
+    app = create_app()
+    app.run(debug=True)

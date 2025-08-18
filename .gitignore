@@ -1,2 +1,6 @@
 .env
-src/__pycache__
+__pycache__/
+*.pyc
+seed.py
+update_db.py
+instance/
