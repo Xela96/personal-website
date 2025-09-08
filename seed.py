@@ -2,9 +2,9 @@ from app import app, db
 from app import Project
 from app import HomepageContent
 
-db.create_all()
-
 with app.app_context():
+    db.create_all()
+
     new_project = Project(
         title="Playwright tests",
         description="An automated test framework built with Playwright to test a Flask web application. Tests created for form validation, email delivery, file download, dynamic search and filtering and more.",
