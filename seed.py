@@ -2,6 +2,8 @@ from app import app, db
 from app import Project
 from app import HomepageContent
 
+db.create_all()
+
 with app.app_context():
     new_project = Project(
         title="Playwright tests",
