@@ -10,10 +10,10 @@ with app.app_context():
     new_project = Project(
         title="Playwright tests",
         description="An automated test framework built with Playwright to test a Flask web application. Tests created for form validation, email delivery, file download, dynamic search and filtering and more.",
-        technologies=["Typescript", "Playwright", "Github CI", "Google Cloud Console"],
         github_url="https://github.com/Xela96/playwright-tests",
         is_published=True
     )
+    new_project.set_technologies(["Typescript", "Playwright", "Github CI", "Google Cloud Console"])
     db.session.add(new_project)
     db.session.commit()
     print("Project added!")
@@ -21,10 +21,10 @@ with app.app_context():
     new_project = Project(
         title="Personal Portfolio Website",
         description="A website to showcase my projects and skills.",
-        technologies=["Python", "Flask", "HTML", "CSS"],
         github_url="https://github.com/Xela96/playwright-tests",
         is_published=True
     )
+    new_project.set_technologies(["Python", "Flask", "HTML", "CSS"])
     db.session.add(new_project)
     db.session.commit()
     print("Project added!")
@@ -35,6 +35,7 @@ with app.app_context():
         technologies=["CSharp", "SpecFlow", "WinAppDriver", "Azure Pipeline"],
         is_published=True
     )
+    new_project.set_technologies(["CSharp", "SpecFlow", "WinAppDriver", "Azure Pipeline"])
     db.session.add(new_project)
     db.session.commit()
     print("Project added!")
@@ -45,6 +46,7 @@ with app.app_context():
         technologies=["Python", "Squish for Python", "CSharp"],
         is_published=True
     )
+    new_project.set_technologies(["Python", "Squish for Python", "CSharp"])
     db.session.add(new_project)
     db.session.commit()
     print("Project added!")
