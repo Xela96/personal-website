@@ -32,7 +32,6 @@ with app.app_context():
     new_project = Project(
         title="Simulation Engine Test Framework",
         description="An automated test framework for automated UI, API and result testing of an energy performance simulation engine.",
-        technologies=["CSharp", "SpecFlow", "WinAppDriver", "Azure Pipeline"],
         is_published=True
     )
     new_project.set_technologies(["CSharp", "SpecFlow", "WinAppDriver", "Azure Pipeline"])
@@ -43,7 +42,6 @@ with app.app_context():
     new_project = Project(
         title="Automated Fluid Tester",
         description="Test library development for automated testing of fluidics medical device. Created test methods to test subsystem requirements of R&D product for design verification. CSharp and Python development for interaction with R&D product, Python script for UI automation and CSharp development for a human-machine interface.",
-        technologies=["Python", "Squish for Python", "CSharp"],
         is_published=True
     )
     new_project.set_technologies(["Python", "Squish for Python", "CSharp"])
