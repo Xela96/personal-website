@@ -15,7 +15,10 @@ from models.admin.myfileadminview import MyFileAdminView
 from models.admin.myadminprojectview import MyAdminProjectView
 
 def create_app():
-    app = Flask(__name__)
+    base_dir = os.path.abspath(os.path.dirname(__file__))
+    app = Flask(__name__,
+        template_folder=os.path.join(base_dir, "templates"),
+        static_folder=os.path.join(base_dir, "static"))
 
     app.secret_key = os.getenv("SECRET_KEY")
     app.config['MAIL_SERVER'] = 'smtp.gmail.com'
