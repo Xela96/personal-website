@@ -5,7 +5,7 @@ from flask_login import login_user
 from models.user import User
 from extensions import csrf, login_manager
 
-login_bp = Blueprint("login", __name__)
+login_bp = Blueprint("login", __name__, template_folder='templates')
 
 def is_safe_url(target):
     ref_url = urlparse(request.host_url)

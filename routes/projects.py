@@ -3,7 +3,7 @@ from models.project import Project
 
 projects_bp = Blueprint("projects", __name__)
 
-@projects_bp.route("/projects")
+@projects_bp.route("/projects", template_folder='templates')
 def projects():
     projects_list = Project.query.filter_by(is_published=True).order_by(Project.date_created.desc()).all()
 
