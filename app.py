@@ -15,7 +15,10 @@ from models.admin.myfileadminview import MyFileAdminView
 from models.admin.myadminprojectview import MyAdminProjectView
 
 def create_app():
-    app = Flask(__name__)
+    base_dir = os.path.abspath(os.path.dirname(__file__))
+    app = Flask(__name__,
+        template_folder=os.path.join(base_dir, "templates"),
+        static_folder=os.path.join(base_dir, "static"))
 
     app.secret_key = os.getenv("SECRET_KEY")
     app.config['MAIL_SERVER'] = 'smtp.gmail.com'
@@ -31,8 +34,8 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
-    app.config['BASIC_AUTH_USERNAME'] = os.getenv("ADMIN_EMAIL")
-    app.config['BASIC_AUTH_PASSWORD'] = os.getenv("ADMIN_PASSWORD")
+    app.config['BASIC_AUTH_USERNAME'] = 'admin@example.com'
+    app.config['BASIC_AUTH_PASSWORD'] = 'password123'
 
     app.register_blueprint(homepage_bp)
     app.register_blueprint(login_bp)
@@ -64,6 +67,3 @@ def init_admin(admin, app):
 if __name__ == "__main__":
     app = create_app()
     app.run(debug=True)
-
-# This line makes sure Gunicorn can find it when deploying to Heroku
-app = create_app()

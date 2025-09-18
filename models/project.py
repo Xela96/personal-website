@@ -1,13 +1,13 @@
 from extensions import db
 from datetime import datetime
-from sqlalchemy.dialects.sqlite import JSON
 from flask import json
+from .jsonencodedlist import JSONEncodedList
 
 class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
-    technologies = db.Column(JSON)
+    technologies = db.Column(JSONEncodedList)
     github_url = db.Column(db.Text)
     date_created = db.Column(db.DateTime, default=datetime.now)
     last_updated = db.Column(db.DateTime, onupdate=datetime.now)
