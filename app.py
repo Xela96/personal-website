@@ -64,3 +64,6 @@ def init_admin(admin, app):
 if __name__ == "__main__":
     app = create_app()
     app.run(debug=True)
+
+# This line makes sure Gunicorn can find it when deploying to Heroku
+app = create_app()
