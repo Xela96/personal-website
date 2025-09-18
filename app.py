@@ -5,6 +5,7 @@ from flask_admin import Admin
 from extensions import db, mail, login_manager, csrf
 from models.homepagecontent import HomepageContent
 from models.project import Project
+from models.downloadfile import DownloadFile
 from routes.home import homepage_bp
 from routes.login import login_bp
 from routes.logout import logout_bp
@@ -13,6 +14,8 @@ from models.admin.myadminhomepageview import MyAdminHomepageView
 from models.admin.myadminindexview import MyAdminIndexView
 from models.admin.myfileadminview import MyFileAdminView
 from models.admin.myadminprojectview import MyAdminProjectView
+from dotenv import load_dotenv
+load_dotenv()
 
 def create_app():
     base_dir = os.path.abspath(os.path.dirname(__file__))
@@ -31,11 +34,16 @@ def create_app():
     app.config['MAIL_MAX_EMAILS'] = None
     app.config['MAIL_SUPPRESS_SEND'] = False
     app.config['MAIL_ASCII_ATTACHMENTS'] = False
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
-    app.config['BASIC_AUTH_USERNAME'] = 'admin@example.com'
-    app.config['BASIC_AUTH_PASSWORD'] = 'password123'
+
+    db_user = os.getenv("SUPABASE_USER")
+    db_password = os.getenv("SUPABASE_PASSWORD")
+    db_host = os.getenv("SUPABASE_HOST")
+    db_port = os.getenv("SUPABASE_PORT")
+    db_name = os.getenv("SUPABASE_DB")
+    SQLALCHEMY_DATABASE_URI = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+    app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     app.register_blueprint(homepage_bp)
     app.register_blueprint(login_bp)
@@ -66,4 +74,6 @@ def init_admin(admin, app):
 
 if __name__ == "__main__":
     app = create_app()
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
