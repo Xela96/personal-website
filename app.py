@@ -31,8 +31,8 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
-    app.config['BASIC_AUTH_USERNAME'] = 'admin@example.com'
-    app.config['BASIC_AUTH_PASSWORD'] = 'password123'
+    app.config['BASIC_AUTH_USERNAME'] = os.getenv("ADMIN_EMAIL")
+    app.config['BASIC_AUTH_PASSWORD'] = os.getenv("ADMIN_PASSWORD")
 
     app.register_blueprint(homepage_bp)
     app.register_blueprint(login_bp)
