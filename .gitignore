@@ -1,6 +1,5 @@
 .env
 __pycache__/
 *.pyc
-seed.py
 update_db.py
 instance/
