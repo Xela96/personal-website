@@ -7,10 +7,15 @@ from extensions import mail
 
 homepage_bp = Blueprint("home", __name__, template_folder='templates')
 
-@homepage_bp.route("/", methods = ['GET', 'POST'])
+@homepage_bp.route("/", methods=['GET', 'POST'])
 def home():
-    about = HomepageContent.query.filter_by(section_name="about_me").first()
-    experience = HomepageContent.query.filter_by(section_name="experience").first()
+    try:
+        about = HomepageContent.query.filter_by(section_name="about_me").first()
+        experience = HomepageContent.query.filter_by(section_name="experience").first()
+    except Exception as e:
+        print("Database query error:", e)
+        return "DB error", 500
+
     form = ContactForm()
     if form.validate_on_submit():
         msg = Message(
@@ -31,9 +36,5 @@ def home():
             return jsonify({'message': message, 'category': category})
         flash(message, category)
         return redirect(url_for('home.home'))
-    else:
-        if request.method == 'POST':
-            print("Form errors:", form.errors)
-    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-        return jsonify({'message': 'Form validation failed', 'category': 'danger', 'errors': form.errors})
+
     return render_template('index.html', form=form, about=about, experience=experience)

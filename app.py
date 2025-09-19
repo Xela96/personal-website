@@ -14,6 +14,7 @@ from models.admin.myadminhomepageview import MyAdminHomepageView
 from models.admin.myadminindexview import MyAdminIndexView
 from models.admin.myfileadminview import MyFileAdminView
 from models.admin.myadminprojectview import MyAdminProjectView
+from sqlalchemy import text
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -61,6 +62,10 @@ def create_app():
 
     admin = Admin(app, name='personal-website', index_view=MyAdminIndexView(), template_mode='bootstrap3')
     init_admin(admin, app)
+
+    # Ready database connection so it doesn't fail on first request
+    with app.app_context():
+        db.session.execute(text("SELECT 1"))
 
     return app
 
