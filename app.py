@@ -62,6 +62,10 @@ def create_app():
     admin = Admin(app, name='personal-website', index_view=MyAdminIndexView(), template_mode='bootstrap3')
     init_admin(admin, app)
 
+    # Ready database connection so it doesn't fail on first request
+    with app.app_context():
+        db.session.execute("SELECT 1")
+
     return app
 
 def init_admin(admin, app):
