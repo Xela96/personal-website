@@ -1,6 +1,5 @@
 from flask import Flask
 import os
-import os.path as op
 from flask_admin import Admin 
 from extensions import db, mail, login_manager, csrf
 from models.homepagecontent import HomepageContent
@@ -12,7 +11,7 @@ from routes.logout import logout_bp
 from routes.projects import projects_bp
 from models.admin.myadminhomepageview import MyAdminHomepageView
 from models.admin.myadminindexview import MyAdminIndexView
-from models.admin.myfileadminview import MyFileAdminView
+from models.admin.myadmindownloadfileview import MyAdminDownloadFileView
 from models.admin.myadminprojectview import MyAdminProjectView
 from sqlalchemy import text
 from dotenv import load_dotenv
@@ -84,7 +83,7 @@ def create_app():
     return app
 
 def init_admin(admin, app):
-    admin.add_view(MyFileAdminView(DownloadFile, db.session))
+    admin.add_view(MyAdminDownloadFileView(DownloadFile, db.session, name="Download Files"))
     admin.add_view(MyAdminProjectView(Project, db.session))
     admin.add_view(MyAdminHomepageView(HomepageContent, db.session))
 
