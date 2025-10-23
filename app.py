@@ -49,6 +49,15 @@ def create_app():
     app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
         "pool_pre_ping": True,
         "pool_recycle": 280,  # recycle connections roughly every 5 minutes
+        "pool_size": 5,
+        "max_overflow": 2,
+    }
+
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        "pool_pre_ping": True,
+        "pool_recycle": 280,
+        "pool_size": 5,
+        "max_overflow": 2,
     }
 
     app.register_blueprint(homepage_bp)
@@ -75,10 +84,7 @@ def create_app():
     return app
 
 def init_admin(admin, app):
-    path = op.join(op.dirname(__file__), 'static/files')
-
-    admin.add_view(MyFileAdminView(path, '/static/files', name='Static Files'))
-
+    admin.add_view(MyFileAdminView(DownloadFile, db.session))
     admin.add_view(MyAdminProjectView(Project, db.session))
     admin.add_view(MyAdminHomepageView(HomepageContent, db.session))
 
