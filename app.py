@@ -46,6 +46,11 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        "pool_pre_ping": True,
+        "pool_recycle": 280,  # recycle connections roughly every 5 minutes
+    }
+
     app.register_blueprint(homepage_bp)
     app.register_blueprint(login_bp)
     app.register_blueprint(logout_bp)
