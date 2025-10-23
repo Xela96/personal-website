@@ -1,5 +1,7 @@
-from flask import Blueprint, render_template, flash, redirect, url_for, request, jsonify
+from flask import Blueprint, render_template, flash, redirect, url_for, request, jsonify, abort, send_file
+import io
 from models.homepagecontent import HomepageContent
+from models.downloadfile import DownloadFile
 from ContactForm import ContactForm
 from flask_mail import Message
 import os
@@ -38,3 +40,15 @@ def home():
         return redirect(url_for('home.home'))
 
     return render_template('index.html', form=form, about=about, experience=experience)
+
+@homepage_bp.route("/download_cv")
+def download_cv():
+    file = DownloadFile.query.filter_by(filename='CV_AlexDoherty.pdf').first()
+    if not file:
+        abort(404)
+    return send_file(
+        io.BytesIO(file.data),
+        as_attachment=True,
+        download_name=file.filename,
+        mimetype="application/pdf"
+    )

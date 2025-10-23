@@ -1,6 +1,6 @@
-# [wip] personal-website
+# personal-website
 
-A simple personal website to display my skills and experience as a software developer. This website will also be utilised as a basis to build and test an automated test library using PlayWright.
+A simple personal website to display my skills and experience as a software developer focused in quality assurance. This website will also be utilised as a basis to build and test an automated test library using Playwright.
 
 ## How It's Made
 Tech used: HTML, CSS, JavaScript, Python, Flask, Jinja2
@@ -8,6 +8,12 @@ Tech used: HTML, CSS, JavaScript, Python, Flask, Jinja2
 Using the Flask web development framework in Python, this website was built with two main pages:
 - Index/Homepage
 - Projects
+
+Also included are:
+- Login
+- Admin  
+
+However these pages are only accessible through the URL.
 
 The homepage gives some basic details about myself and my professional experience. My CV is also downloadable from here.  
 A contact me form is used for anyone who would like to contact me, which uses FlaskForms with minimum and maximum restrictions among others to validate the content within the textboxes.  
@@ -19,5 +25,5 @@ Bootstrap is used throughout the website for a clean and consistent style to the
 
 ## Optimisations
 
-To be done 
+To be done
 
