@@ -1,6 +1,5 @@
 from flask import Flask
 import os
-import os.path as op
 from flask_admin import Admin 
 from extensions import db, mail, login_manager, csrf
 from models.homepagecontent import HomepageContent
@@ -12,8 +11,9 @@ from routes.logout import logout_bp
 from routes.projects import projects_bp
 from models.admin.myadminhomepageview import MyAdminHomepageView
 from models.admin.myadminindexview import MyAdminIndexView
-from models.admin.myfileadminview import MyFileAdminView
+from models.admin.myadmindownloadfileview import MyAdminDownloadFileView
 from models.admin.myadminprojectview import MyAdminProjectView
+from sqlalchemy import text
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -45,6 +45,13 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        "pool_pre_ping": True,
+        "pool_recycle": 280,  # recycle connections roughly every 5 minutes
+        "pool_size": 5,
+        "max_overflow": 2,
+    }
+
     app.register_blueprint(homepage_bp)
     app.register_blueprint(login_bp)
     app.register_blueprint(logout_bp)
@@ -62,13 +69,14 @@ def create_app():
     admin = Admin(app, name='personal-website', index_view=MyAdminIndexView(), template_mode='bootstrap3')
     init_admin(admin, app)
 
+    # Ready database connection so it doesn't fail on first request
+    with app.app_context():
+        db.session.execute(text("SELECT 1"))
+
     return app
 
 def init_admin(admin, app):
-    path = op.join(op.dirname(__file__), 'static/files')
-
-    admin.add_view(MyFileAdminView(path, '/static/files', name='Static Files'))
-
+    admin.add_view(MyAdminDownloadFileView(DownloadFile, db.session, name="Download Files"))
     admin.add_view(MyAdminProjectView(Project, db.session))
     admin.add_view(MyAdminHomepageView(HomepageContent, db.session))
 
