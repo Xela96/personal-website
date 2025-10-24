@@ -52,13 +52,6 @@ def create_app():
         "max_overflow": 2,
     }
 
-    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
-        "pool_pre_ping": True,
-        "pool_recycle": 280,
-        "pool_size": 5,
-        "max_overflow": 2,
-    }
-
     app.register_blueprint(homepage_bp)
     app.register_blueprint(login_bp)
     app.register_blueprint(logout_bp)
