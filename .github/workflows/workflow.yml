@@ -15,4 +15,4 @@ jobs:
             -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: token ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
             https://api.github.com/repos/Xela96/playwright-tests/dispatches \
-            -d '{"event_type": "run-playwright-tests", "client_payload": {"environment": "local", "category": "all"}}'
+            -d '{"event_type": "run-playwright-tests", "client_payload": {"environment": "local", "test_type": "all"}}'
