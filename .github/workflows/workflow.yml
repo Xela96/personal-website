@@ -1,4 +1,4 @@
-name: Trigger Playwright Tests
+name: Trigger Tests
 
 on:
   push:
