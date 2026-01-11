@@ -22,8 +22,3 @@ A Gmail server is used for me to receive the message as well as the contact deta
 The Projects page displays some projects I have worked on in my personal and professional career, with links to the source code where possible. AJAX is used for a reactive search function as well as a filter by technologies button.
 
 Bootstrap is used throughout the website for a clean and consistent style to the website.
-
-## Optimisations
-
-To be done
-

@@ -5,7 +5,7 @@ projects_bp = Blueprint("projects", __name__)
 
 @projects_bp.route("/projects")
 def projects():
-    projects_list = Project.query.filter_by(is_published=True).order_by(Project.date_created.asc()).all()
+    projects_list = Project.query.filter_by(is_published=True).order_by(Project.date_created.desc()).all()
 
     text = request.args.get('searchText', '')
     if request.headers.get("X-Requested-With") == "XMLHttpRequest" and text:
